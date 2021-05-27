@@ -1,0 +1,31 @@
+ip route vrf vpn10 192.168.20.10 255.255.255.255 10.164.1.2
+ip route vrf vpn11 192.168.20.11 255.255.255.255 10.164.1.10
+!
+interface Loopback10
+ vrf forwarding vpn10
+ ip address 192.168.20.1 255.255.255.255
+
+ interface Loopback11
+ vrf forwarding vpn11
+ ip address 192.168.20.101 255.255.255.255
+ !
+
+!!!
+
+router bgp 65008
+ bgp router-id 10.80.0.20
+
+ address-family ipv4 vrf vpn10
+  neighbor 192.168.20.10 remote-as 65180
+  neighbor 192.168.20.10 ebgp-multihop 10
+  neighbor 192.168.20.10 update-source Loopback10
+  neighbor 192.168.20.10 activate
+ exit-address-family
+!
+ address-family ipv4 vrf vpn11
+  neighbor 192.168.20.11 remote-as 65180
+  neighbor 192.168.20.11 ebgp-multihop 10
+  neighbor 192.168.20.11 update-source Loopback11
+  neighbor 192.168.20.11 activate
+ exit-address-family
+!

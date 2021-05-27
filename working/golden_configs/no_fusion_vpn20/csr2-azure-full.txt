@@ -1,0 +1,843 @@
+﻿﻿ct_routerp_eastus_1_0#show run
+Building configuration...
+
+Current configuration : 24695 bytes
+!
+! Last configuration change at 17:36:46 UTC Thu May 27 2021 by cisco
+!
+version 17.3
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service call-home
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+platform hardware throughput level MB 1000 
+!
+hostname ct_routerp_eastus_1_0
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition GS
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition infra:overlay-1
+ description infra:overlay-1
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition infra:overlay-2
+ description infra:overlay-2
+ rd 10.80.0.116:7
+ !
+ address-family ipv4
+  import map infra:overlay-2_import
+  export map infra:overlay-2_export
+  route-target import 65008:2326528
+  route-target import 65008:2555905
+  route-target import 17480123:46271 stitching
+ exit-address-family
+!
+vrf definition jeff:vrf1
+ description jeff:vrf1
+ rd 10.80.0.116:8
+ !
+ address-family ipv4
+  import map jeff:vrf1_import
+  export map jeff:vrf1_export
+  route-target import 65008:2588672
+  route-target import 65008:2326528
+  route-target import 65008:2555905
+  route-target import 65008:2588110
+  route-target export 17480126:46271 stitching
+  route-target import 17480126:46271 stitching
+  route-target import 17480123:46271 stitching
+ exit-address-family
+!
+vrf definition jeff:vrf2
+ description jeff:vrf2
+ rd 10.80.0.116:9
+ !
+ address-family ipv4
+  import map jeff:vrf2_import
+  export map jeff:vrf2_export
+  route-target import 65008:3112960
+  route-target import 65008:2588672
+  route-target import 65008:2588111
+  route-target export 17480125:46271 stitching
+  route-target import 17480124:46271 stitching
+  route-target import 17480125:46271 stitching
+ exit-address-family
+!
+vrf definition jeff:vrf3
+ description jeff:vrf3
+ rd 10.80.0.116:10
+ !
+ address-family ipv4
+  import map jeff:vrf3_import
+  export map jeff:vrf3_export
+  route-target import 65008:2588672
+  route-target import 65008:3112960
+  route-target import 65008:2555905
+  route-target export 17480128:46679 stitching
+  route-target import 17480127:46679 stitching
+  route-target import 17480128:46679 stitching
+ exit-address-family
+!
+vrf definition management
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition vpn10
+ rd 10.80.0.116:8010
+ !
+ address-family ipv4
+  import map vpn10_import
+  export map vpn10_export
+  route-target export 65008:2588110
+  route-target import 65008:2555905
+ exit-address-family
+!
+vrf definition vpn11
+ rd 10.80.0.116:8011
+ !
+ address-family ipv4
+  import map vpn11_import
+  export map vpn11_export
+  route-target export 65008:2588111
+  route-target import 65008:3112960
+ exit-address-family
+!
+logging persistent size 1000000 filesize 8192 immediate
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local none 
+!
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+ip domain name ct-routerp-eastus-1-0.cloudapp.net
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment terminal
+ revocation-check crl
+!
+crypto pki trustpoint TP-self-signed-45108454
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-45108454
+ revocation-check none
+ rsakeypair TP-self-signed-45108454
+!
+!
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+        quit
+crypto pki certificate chain TP-self-signed-45108454
+ certificate self-signed 01
+  3082032C 30820214 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  2F312D30 2B060355 04031324 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 34353130 38343534 301E170D 32313035 32313233 32313034 
+  5A170D33 31303532 31323332 3130345A 302F312D 302B0603 55040313 24494F53 
+  2D53656C 662D5369 676E6564 2D436572 74696669 63617465 2D343531 30383435 
+  34308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 0A028201 
+  01009D16 4E7773EF 4CC7E6BE A9A57EE1 2579E059 367B7426 D678AC7C 5ADFD9B4 
+  69ED0596 8764570A C4179E7E 1CAABE56 2C7982E1 A7F1F01B 6DD3CFA4 BA3C9691 
+  1B2E8211 39C8147A 2C6A1AA0 0F138004 27FE70FC 0F40A3C0 57ABC548 BC5D0FC7 
+  AF2B7047 F1D7BA3F C33D882C 614FA42D 8C2AEEC3 582A1D92 46284C3A 8F1C80E0 
+  248F867F B4EF31D8 30BD5A4A B22D7FB8 27D86781 9C69C9B1 B8FCC9B8 3B63D601 
+  B96A6763 A6969005 33EE4B2B 5C412B72 22F88966 25F88349 7AF29E93 62502CE6 
+  2F59CF1F 1687F761 E960B26E 3369F4ED 7A4463AC 93B18368 EAD76336 35A0F84F 
+  6B27EC15 116A581E 763B2AC1 ED5B1674 734CFB71 E831022D CAB1F5B6 A5959930 
+  381D0203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 14D1FA6A DC84026B 588B3A30 1F34A4AB 55C89E50 E3301D06 
+  03551D0E 04160414 D1FA6ADC 84026B58 8B3A301F 34A4AB55 C89E50E3 300D0609 
+  2A864886 F70D0101 05050003 82010100 260511B3 8AD7A411 6F9F3631 A1C66CF5 
+  66B0A1E7 6DA0A55C FAD9EAD1 B5A17110 E4CF8E2A 7C47102F BC64F8DA 91EC77AF 
+  6FB0BF94 C1936588 33377FBA 34705CB0 E30E488C E73A7994 7D6D3478 57B98F81 
+  5143A685 D25365A5 804D2059 76576539 7D0F5AA7 C1F7AE68 C53F2476 0388D3CF 
+  0E02168D C8AE7C33 352B604A D535A23E B458E03C 9BF22103 B7A200AE 1A5CD579 
+  1F34C387 E12E34FB C85C3B7A 4B73F461 46CE9966 50F487F0 FD4005A3 EF67D354 
+  A6376898 A1CBECCD 9B8F4324 B53C4F40 FEB64A76 8E9821A5 DB53966E 5B06A4A1 
+  CEA8043B E523DA35 1B8B4360 F102B9C7 1D7B4D24 A01FF4E1 EBB598EE 9E3F7DF1 
+  0A33B8F7 96F43440 E406D26A 47BFE604
+        quit
+!
+license udi pid CSR1000V sn 91ZCGCPEBAJ
+diagnostic bootup level minimal
+memory free low-watermark processor 71507
+!
+!
+spanning-tree extend system-id
+!
+username cisco privilege 15 secret 9 $9$7eQKoFX3VBm6gE$DvbdMmlRYWHlIxCq/ASZ1NKYceTYDmWyAjNSxKdArwQ
+!
+redundancy
+!
+bridge-domain 7 
+ member vni 2326528
+!
+bridge-domain 8 
+ member vni 2555905
+!
+bridge-domain 9 
+ member vni 3112960
+!
+bridge-domain 10 
+ member vni 2588672
+!
+!
+!
+!
+!
+!
+!
+! 
+crypto keyring infra:overlay-1-3  
+  pre-shared-key address 3.106.66.40 key QARBRCG08FSJFDSYH9E1K4GD6UB8TU3HSCTD98E48HLKQ21E82U3MFO7S5H5HYIC
+crypto keyring infra:overlay-1-4  
+  pre-shared-key address 3.24.196.111 key QARBRCG08FSJFDSYH9E1K4GD6UB8TU3HSCTD98E48HLKQ21E82U3MFO7S5H5HYIC
+crypto keyring infra:cat8kv-810  
+  pre-shared-key address 172.16.84.21 key 123456
+crypto keyring infra:cat8kv-811  
+  pre-shared-key address 172.16.84.37 key 123456
+!
+!
+!
+!
+!
+!
+!
+crypto isakmp policy 1
+ encryption aes
+ authentication pre-share
+ group 2
+!
+crypto isakmp policy 810
+ encryption aes
+ authentication pre-share
+ group 14
+ lifetime 28800
+!
+crypto isakmp policy 811
+ encryption aes
+ authentication pre-share
+ group 14
+ lifetime 28800
+crypto isakmp profile infra:overlay-1-3
+   keyring infra:overlay-1-3
+   match identity address 3.106.66.40 255.255.255.255 
+   local-address GigabitEthernet3
+crypto isakmp profile infra:overlay-1-4
+   keyring infra:overlay-1-4
+   match identity address 3.24.196.111 255.255.255.255 
+   local-address GigabitEthernet3
+crypto isakmp profile infra:cat8kv-810
+   keyring infra:cat8kv-810
+   match identity address 172.16.84.21 255.255.255.255 
+   local-address GigabitEthernet4
+crypto isakmp profile infra:cat8kv-811
+   keyring infra:cat8kv-811
+   match identity address 172.16.84.37 255.255.255.255 
+   local-address GigabitEthernet4
+!
+!
+crypto ipsec transform-set infra:overlay-1-3 esp-aes esp-sha-hmac 
+ mode tunnel
+crypto ipsec transform-set infra:overlay-1-4 esp-aes esp-sha-hmac 
+ mode tunnel
+crypto ipsec transform-set infra:cat8kv-810 esp-gcm 256 
+ mode tunnel
+crypto ipsec transform-set infra:cat8kv-811 esp-gcm 256 
+ mode tunnel
+!
+!
+crypto ipsec profile infra:cat8kv-810
+ description infra:cat8kv-810
+ set transform-set infra:cat8kv-810 
+ set pfs group14
+ set isakmp-profile infra:cat8kv-810
+!
+crypto ipsec profile infra:cat8kv-811
+ description infra:cat8kv-811
+ set transform-set infra:cat8kv-811 
+ set pfs group14
+ set isakmp-profile infra:cat8kv-811
+!
+crypto ipsec profile infra:overlay-1-3
+ description infra:overlay-1-3
+ set transform-set infra:overlay-1-3 
+ set pfs group2
+!
+crypto ipsec profile infra:overlay-1-4
+ description infra:overlay-1-4
+ set transform-set infra:overlay-1-4 
+ set pfs group2
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback1
+ description dptep
+ no ip address
+ ip ospf 1 area 0.0.0.0
+!
+interface Loopback10
+ vrf forwarding vpn10
+ ip address 192.168.20.2 255.255.255.255
+!
+interface Loopback11
+ vrf forwarding vpn11
+ ip address 192.168.20.102 255.255.255.255
+!
+interface Tunnel3
+ description cloud tunnel
+ ip address 10.12.0.7 255.255.255.254
+ ip mtu 1400
+ ip tcp adjust-mss 1300
+ ip ospf 1 area 0.0.0.0
+ tunnel source GigabitEthernet3
+ tunnel mode ipsec ipv4
+ tunnel destination 3.106.66.40
+ tunnel protection ipsec profile infra:overlay-1-3
+!
+interface Tunnel4
+ description cloud tunnel
+ ip address 10.12.0.5 255.255.255.254
+ ip mtu 1400
+ ip tcp adjust-mss 1300
+ ip ospf 1 area 0.0.0.0
+ tunnel source GigabitEthernet3
+ tunnel mode ipsec ipv4
+ tunnel destination 3.24.196.111
+ tunnel protection ipsec profile infra:overlay-1-4
+!
+interface Tunnel810
+ vrf forwarding vpn10
+ ip address 10.164.1.5 255.255.255.252
+ ip mtu 1400
+ ip tcp adjust-mss 1400
+ tunnel source GigabitEthernet4
+ tunnel mode ipsec ipv4
+ tunnel destination 172.16.84.21
+ tunnel protection ipsec profile infra:cat8kv-810
+!
+interface Tunnel811
+ vrf forwarding vpn11
+ ip address 10.164.1.13 255.255.255.252
+ ip mtu 1400
+ ip tcp adjust-mss 1400
+ tunnel source GigabitEthernet4
+ tunnel mode ipsec ipv4
+ tunnel destination 172.16.84.37
+ tunnel protection ipsec profile infra:cat8kv-811
+!
+interface VirtualPortGroup0
+ vrf forwarding GS
+ ip address 192.168.35.101 255.255.255.0
+ ip nat inside
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet1
+ vrf forwarding management
+ ip address dhcp
+ ip nat outside
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ description cloud internal tunnel source
+ ip address 10.80.0.84 255.255.255.240
+ ip tcp adjust-mss 1300
+ ip policy route-map VrfGroup-1
+ speed 1000
+ no negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet3
+ description cloud external tunnel source
+ ip address 10.80.0.100 255.255.255.240
+ ip tcp adjust-mss 1300
+ speed 1000
+ no negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4
+ description unused
+ ip address 10.80.0.116 255.255.255.240
+ ip tcp adjust-mss 1300
+ ip ospf 1 area 0.0.0.0
+ speed 1000
+ no negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface BDI7
+ description vrf is infra:overlay-2
+ vrf forwarding infra:overlay-2
+ ip address 192.168.100.100 255.255.255.0
+ no mop enabled
+ no mop sysid
+!
+interface BDI8
+ description vrf is jeff:vrf1
+ vrf forwarding jeff:vrf1
+ ip address 192.168.100.100 255.255.255.0
+ no mop enabled
+ no mop sysid
+!
+interface BDI9
+ description vrf is jeff:vrf2
+ vrf forwarding jeff:vrf2
+ ip address 192.168.100.100 255.255.255.0
+ no mop enabled
+ no mop sysid
+!
+interface BDI10
+ description vrf is jeff:vrf3
+ vrf forwarding jeff:vrf3
+ ip address 192.168.100.100 255.255.255.0
+ no mop enabled
+ no mop sysid
+!
+interface nve1
+ no ip address
+ source-interface GigabitEthernet4
+ host-reachability protocol bgp
+ vxlan udp port 48879
+ member vni 3112960 vrf jeff:vrf2
+ member vni 2326528 vrf infra:overlay-2
+ member vni 2588672 vrf jeff:vrf3
+ member vni 2555905 vrf jeff:vrf1
+ no mop enabled
+ no mop sysid
+!
+router ospf 1
+ router-id 10.80.0.68
+!
+router bgp 65008
+ bgp router-id 10.80.0.68
+ no bgp log-neighbor-changes
+ neighbor 10.11.0.52 remote-as 65001
+ neighbor 10.11.0.52 ebgp-multihop 10
+ neighbor 10.11.0.52 update-source GigabitEthernet4
+ neighbor 10.11.0.116 remote-as 65001
+ neighbor 10.11.0.116 ebgp-multihop 10
+ neighbor 10.11.0.116 update-source GigabitEthernet4
+ !
+ address-family l2vpn evpn
+  neighbor 10.11.0.52 activate
+  neighbor 10.11.0.52 send-community both
+  neighbor 10.11.0.52 route-map in_evpn_rmap in
+  neighbor 10.11.0.52 route-map out_evpn_rmap out
+  neighbor 10.11.0.116 activate
+  neighbor 10.11.0.116 send-community both
+  neighbor 10.11.0.116 route-map in_evpn_rmap in
+  neighbor 10.11.0.116 route-map out_evpn_rmap out
+ exit-address-family
+ !
+ address-family ipv4 vrf infra:overlay-2
+  advertise l2vpn evpn
+  redistribute static route-map infra:overlay-2_redist_static
+  maximum-paths eibgp 32
+ exit-address-family
+ !
+ address-family ipv4 vrf jeff:vrf1
+  advertise l2vpn evpn
+  redistribute static route-map jeff:vrf1_redist_static
+  maximum-paths eibgp 32
+ exit-address-family
+ !
+ address-family ipv4 vrf jeff:vrf2
+  advertise l2vpn evpn
+  redistribute static route-map jeff:vrf2_redist_static
+  maximum-paths eibgp 32
+ exit-address-family
+ !
+ address-family ipv4 vrf jeff:vrf3
+  advertise l2vpn evpn
+  redistribute static route-map jeff:vrf3_redist_static
+  maximum-paths eibgp 32
+ exit-address-family
+ !
+ address-family ipv4 vrf vpn10
+  neighbor 192.168.20.10 remote-as 65180
+  neighbor 192.168.20.10 ebgp-multihop 10
+  neighbor 192.168.20.10 update-source Loopback10
+  neighbor 192.168.20.10 activate
+ exit-address-family
+ !
+ address-family ipv4 vrf vpn11
+  neighbor 192.168.20.11 remote-as 65180
+  neighbor 192.168.20.11 ebgp-multihop 10
+  neighbor 192.168.20.11 update-source Loopback11
+  neighbor 192.168.20.11 activate
+ exit-address-family
+!
+iox
+ip forward-protocol nd
+ip tcp window-size 8192
+ip http server
+ip http secure-server
+ip http tls-version TLSv1.2 
+ip http client source-interface GigabitEthernet1
+!
+ip extcommunity-list standard jeff:vrf1 permit rt 17480126:46271
+ip extcommunity-list standard jeff:vrf2 permit rt 17480125:46271
+ip extcommunity-list standard jeff:vrf3 permit rt 17480128:46679
+ip community-list 2 permit 655361
+ip nat inside source list GS_NAT_ACL interface GigabitEthernet1 vrf GS overload
+ip route 0.0.0.0 0.0.0.0 10.80.0.65
+ip route 3.24.196.111 255.255.255.255 GigabitEthernet3 10.80.0.97
+ip route 3.106.66.40 255.255.255.255 GigabitEthernet3 10.80.0.97
+ip route 168.63.129.16 255.255.255.255 GigabitEthernet2 10.80.0.81
+ip route 168.63.129.16 255.255.255.255 GigabitEthernet3 10.80.0.97
+ip route 168.63.129.16 255.255.255.255 GigabitEthernet4 10.80.0.113
+ip route 172.16.84.0 255.255.255.0 GigabitEthernet4 10.80.0.113
+ip route vrf GS 0.0.0.0 0.0.0.0 GigabitEthernet1 10.80.0.65 global
+ip route vrf infra:overlay-2 81.0.0.0 255.255.0.0 GigabitEthernet2 10.80.0.81
+ip route vrf infra:overlay-2 82.0.0.0 255.255.0.0 GigabitEthernet2 10.80.0.81
+ip route vrf infra:overlay-2 172.16.80.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf infra:overlay-2 172.16.81.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf infra:overlay-2 172.16.82.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf infra:overlay-2 172.16.83.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf infra:overlay-2 172.16.84.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf1 81.0.0.0 255.255.0.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf1 172.16.80.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf1 172.16.81.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf1 172.16.82.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf1 172.16.83.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf1 172.16.84.0 255.255.255.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf2 82.0.0.0 255.255.0.0 GigabitEthernet2 10.80.0.81
+ip route vrf jeff:vrf3 83.0.0.0 255.255.0.0 GigabitEthernet2 10.80.0.81
+ip route vrf management 0.0.0.0 0.0.0.0 GigabitEthernet1 10.80.0.65 global
+ip route vrf vpn10 192.168.20.10 255.255.255.255 10.164.1.6
+ip route vrf vpn11 192.168.20.11 255.255.255.255 10.164.1.14
+ip ssh rsa keypair-name sshkeys
+ip ssh pubkey-chain
+  username cisco
+   key-hash ssh-rsa AB83A37A3642EB2E1120CFB996F77F19 
+ip ssh server algorithm publickey ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 ssh-rsa x509v3-ecdsa-sha2-nistp256 x509v3-ecdsa-sha2-nistp384 x509v3-ecdsa-sha2-nistp521
+ip scp server enable
+!
+ip access-list standard infra:overlay-2:VG1
+ 60 permit 0.0.0.0
+ 10 permit 172.16.84.0 0.0.0.255
+ 20 permit 172.16.82.0 0.0.0.255
+ 30 permit 172.16.80.0 0.0.0.255
+ 40 permit 172.16.83.0 0.0.0.255
+ 50 permit 172.16.81.0 0.0.0.255
+ip access-list standard jeff:vrf1:VG1
+ 20 permit 0.0.0.0
+ 10 permit 81.0.0.0 0.0.255.255
+ip access-list standard jeff:vrf2:VG1
+ 20 permit 0.0.0.0
+ 10 permit 82.0.0.0 0.0.255.255
+ip access-list standard jeff:vrf3:VG1
+ 20 permit 0.0.0.0
+ 10 permit 83.0.0.0 0.0.255.255
+!
+!
+!
+ip prefix-list infra:overlay-1_local_region seq 4294967294 permit 0.0.0.0/32
+!
+ip prefix-list infra:overlay-2 seq 2886750463 permit 172.16.80.0/24
+ip prefix-list infra:overlay-2 seq 2886750719 permit 172.16.81.0/24
+ip prefix-list infra:overlay-2 seq 2886750975 permit 172.16.82.0/24
+ip prefix-list infra:overlay-2 seq 2886751231 permit 172.16.83.0/24
+ip prefix-list infra:overlay-2 seq 2886751487 permit 172.16.84.0/24
+!
+ip prefix-list infra:overlay-2-external seq 2886467583 permit 172.11.0.0/16
+ip prefix-list infra:overlay-2-external seq 3232240895 permit 192.168.20.0/24
+!
+ip prefix-list infra:overlay-2_local_region seq 2886750463 permit 172.16.80.0/24
+ip prefix-list infra:overlay-2_local_region seq 2886750719 permit 172.16.81.0/24
+ip prefix-list infra:overlay-2_local_region seq 2886750975 permit 172.16.82.0/24
+ip prefix-list infra:overlay-2_local_region seq 2886751231 permit 172.16.83.0/24
+ip prefix-list infra:overlay-2_local_region seq 2886751487 permit 172.16.84.0/24
+ip prefix-list infra:overlay-2_local_region seq 4294967294 permit 0.0.0.0/32
+!
+ip prefix-list jeff:vrf1 seq 1359020031 permit 81.0.0.0/16
+!
+ip prefix-list jeff:vrf1-external seq 1694565375 permit 101.1.3.0/24
+ip prefix-list jeff:vrf1-external seq 1711342591 permit 102.1.3.0/24
+ip prefix-list jeff:vrf1-external seq 3232240895 permit 192.168.20.0/24
+!
+ip prefix-list jeff:vrf1_local_region seq 1359020031 permit 81.0.0.0/16
+ip prefix-list jeff:vrf1_local_region seq 4294967294 permit 0.0.0.0/32
+!
+ip prefix-list jeff:vrf2 seq 1375797247 permit 82.0.0.0/16
+!
+ip prefix-list jeff:vrf2-external seq 1694565631 permit 101.1.4.0/24
+ip prefix-list jeff:vrf2-external seq 1711342847 permit 102.1.4.0/24
+ip prefix-list jeff:vrf2-external seq 3232240895 permit 192.168.20.0/24
+!
+ip prefix-list jeff:vrf2_local_region seq 1375797247 permit 82.0.0.0/16
+ip prefix-list jeff:vrf2_local_region seq 4294967294 permit 0.0.0.0/32
+!
+ip prefix-list jeff:vrf3 seq 1392574463 permit 83.0.0.0/16
+!
+ip prefix-list jeff:vrf3_local_region seq 4294967294 permit 0.0.0.0/32
+!
+ip prefix-list vpn10 seq 10 permit 101.1.3.0/24
+ip prefix-list vpn10 seq 11 permit 102.1.3.0/24
+!
+ip prefix-list vpn11 seq 10 permit 101.1.4.0/24
+ip prefix-list vpn11 seq 11 permit 102.1.4.0/24
+!
+!
+route-map VrfGroup-1 permit 7 
+ match ip address infra:overlay-2:VG1
+ set vrf infra:overlay-2
+!
+route-map VrfGroup-1 permit 8 
+ match ip address jeff:vrf1:VG1
+ set vrf jeff:vrf1
+!
+route-map VrfGroup-1 permit 9 
+ match ip address jeff:vrf2:VG1
+ set vrf jeff:vrf2
+!
+route-map VrfGroup-1 permit 10 
+ match ip address jeff:vrf3:VG1
+ set vrf jeff:vrf3
+!
+route-map in_evpn_rmap permit 5 
+ set community 655361
+!
+route-map jeff:vrf1_import deny 5 
+ match ip address prefix-list jeff:vrf1 vpn11
+!
+route-map jeff:vrf1_import permit 65535 
+!
+route-map jeff:vrf3_import deny 5 
+ match ip address prefix-list jeff:vrf3
+!
+route-map jeff:vrf3_import permit 65535 
+!
+route-map jeff:vrf2_import deny 5 
+ match ip address prefix-list jeff:vrf2 vpn10
+!
+route-map jeff:vrf2_import permit 65535 
+!
+route-map infra:overlay-2_redist_static permit 5 
+ match ip address prefix-list infra:overlay-1_local_region jeff:vrf1_local_region infra:overlay-2_local_region
+ set origin egp 65008
+!
+route-map infra:overlay-2_redist_static permit 65535 
+!
+route-map vpn11_import deny 5 
+ match ip address prefix-list vpn11
+!
+route-map vpn11_import permit 65535 
+!
+route-map vpn10_import deny 5 
+ match ip address prefix-list vpn10
+!
+route-map vpn10_import permit 65535 
+!
+route-map infra:overlay-2 permit 5 
+ match ip address prefix-list infra:overlay-1 jeff:vrf1 infra:overlay-2 infra:overlay-2-external
+!
+route-map vpn10_export permit 5 
+ match ip address prefix-list vpn10
+ set extcommunity rt 65008:2588110
+!
+route-map vpn11_export permit 5 
+ match ip address prefix-list vpn11
+ set extcommunity rt 65008:2588111
+!
+route-map out_nh_evpn_rmap permit 6 
+ match community 2
+ set ip next-hop 10.80.0.84
+!
+route-map jeff:vrf1_export permit 5 
+ match ip address prefix-list jeff:vrf1
+ set extcommunity rt 65008:2555905
+!
+route-map jeff:vrf2_export permit 5 
+ match ip address prefix-list jeff:vrf2
+ set extcommunity rt 65008:3112960
+!
+route-map jeff:vrf3_export permit 5 
+ match ip address prefix-list jeff:vrf3
+ set extcommunity rt 65008:2588672
+!
+route-map jeff:vrf2_redist_static permit 5 
+ match ip address prefix-list jeff:vrf3_local_region jeff:vrf2_local_region
+ set origin egp 65008
+!
+route-map jeff:vrf2_redist_static permit 65535 
+!
+route-map jeff:vrf3_redist_static permit 5 
+ match ip address prefix-list jeff:vrf1_local_region jeff:vrf2_local_region jeff:vrf3_local_region
+ set origin egp 65008
+!
+route-map jeff:vrf3_redist_static permit 65535 
+!
+route-map jeff:vrf1_redist_static permit 5 
+ match ip address prefix-list infra:overlay-2_local_region jeff:vrf3_local_region jeff:vrf1_local_region
+ set origin egp 65008
+!
+route-map jeff:vrf1_redist_static permit 65535 
+!
+route-map jeff:vrf3 permit 5 
+ match ip address prefix-list jeff:vrf1 jeff:vrf2 jeff:vrf3
+!
+route-map jeff:vrf3 permit 10 
+ match extcommunity jeff:vrf3
+!
+route-map jeff:vrf2 permit 5 
+ match ip address prefix-list jeff:vrf3 jeff:vrf2 jeff:vrf2-external
+!
+route-map jeff:vrf2 permit 10 
+ match extcommunity jeff:vrf2
+!
+route-map jeff:vrf1 permit 5 
+ match ip address prefix-list infra:overlay-2 jeff:vrf3 jeff:vrf1 jeff:vrf1-external
+!
+route-map jeff:vrf1 permit 10 
+ match extcommunity jeff:vrf1
+!
+route-map out_evpn_rmap deny 5 
+ match community 2
+!
+route-map out_evpn_rmap permit 65535 
+!
+route-map infra:overlay-2_import deny 5 
+ match ip address prefix-list infra:overlay-2
+!
+route-map infra:overlay-2_import permit 65535 
+!
+route-map infra:overlay-2_export permit 5 
+ match ip address prefix-list infra:overlay-2
+ set extcommunity rt 65008:2326528
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ transport input ssh
+line vty 5 20
+ transport input ssh
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+!
+!
+!
+!
+!
+app-hosting appid guestshell
+ app-vnic gateway1 virtualportgroup 0 guest-interface 0
+  guest-ipaddress 192.168.35.102 netmask 255.255.255.0
+ app-default-gateway 192.168.35.101 guest-interface 0
+ name-server0 8.8.8.8
+end
+
