@@ -38,9 +38,10 @@ if __name__ == "__main__":
 
     auth, vmanage_host = login_vmanage()
     vmanage_central_policy = CentralPolicy(auth, vmanage_host)
-    vmanage_central_policy.activate_central_policy('segment-mcloud-2ways',
-                                                   '20506b60-901d-449f-9e3c-819a0b596b56')
+    vmanage_central_policy.activate_central_policy('all-vpn20-omp-tag-pol',
+                                                   'a85d2ced-d3d5-45f9-aea0-9d538e4dae06')
     #print_central_policy()
     print('Central Policy activation done!')
 # vnendc lab: a85d2ced-d3d5-45f9-aea0-9d538e4dae06
+# vnendc lab pol name: all-vpn20-omp-tag-pol
 
