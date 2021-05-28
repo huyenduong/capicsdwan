@@ -1,0 +1,55 @@
+ip route 10.11.4.25 255.255.255.255 GigabitEthernet3 10.11.0.33
+ip route 10.11.4.37 255.255.255.255 GigabitEthernet4 10.11.0.49
+!
+vrf definition vpn10
+ rd 10.11.0.52:8010
+ !
+ address-family ipv4
+  import map vpn10_import
+  export map vpn10_export
+ exit-address-family
+!
+vrf definition vpn11
+ rd 10.11.0.52:8011
+ !
+ address-family ipv4
+  import map vpn11_import
+  export map vpn11_export
+ exit-address-family
+!
+!!!
+crypto keyring infra:cat8kv-810 
+  pre-shared-key address 10.11.4.25 key 123456
+!
+crypto isakmp policy 810
+ encryption aes 128
+ authentication pre-share
+ group 14
+ lifetime 28800
+!
+crypto isakmp profile infra:cat8kv-810
+   keyring infra:cat8kv-810
+   match identity address 10.11.4.25 255.255.255.255 
+   local-address GigabitEthernet3
+!
+crypto ipsec transform-set infra:cat8kv-810 esp-gcm 256 
+ mode tunnel
+!
+!
+crypto ipsec profile infra:cat8kv-810
+ description infra:cat8kv-810
+ set transform-set infra:cat8kv-810 
+ set isakmp-profile infra:cat8kv-810
+ set pfs group14
+!
+!
+interface Tunnel810
+ vrf forwarding vpn10
+ ip address 10.161.1.1 255.255.255.252
+ ip mtu 1400
+ ip tcp adjust-mss 1400
+ tunnel source GigabitEthernet3
+ tunnel mode ipsec ipv4
+ tunnel destination 10.11.4.25
+ tunnel protection ipsec profile infra:cat8kv-810
+!
