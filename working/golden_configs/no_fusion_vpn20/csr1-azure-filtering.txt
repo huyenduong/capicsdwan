@@ -1,4 +1,4 @@
-﻿﻿vrf definition jeff:vrf1
+﻿vrf definition jeff:vrf1
  description jeff:vrf1
  rd 10.80.0.52:8
  !

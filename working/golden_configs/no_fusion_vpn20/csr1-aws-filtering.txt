@@ -4,16 +4,16 @@
  !
  address-family ipv4
   !!! vpn10 RT
-  route-target import 65008:2588110
+  route-target import 65001:2588110
  exit-address-family
 !
 vrf definition jeff:vrf2
  description jeff:vrf2
  rd 10.11.0.52:3
- !
+ !  
  address-family ipv4
   !!! vpn11 RT
-  route-target import 65008:2588111
+  route-target import 65001:2588111
  exit-address-family
 !
 
@@ -23,8 +23,9 @@ vrf definition vpn10
  address-family ipv4
   import map vpn10_import
   export map vpn10_export
-  route-target export 65008:2588110
-  route-target import 65008:2555905
+  route-target export 65001:2588110
+  no route-target import 65001:2555905
+  route-target import 65001:2359297
  exit-address-family
 !
 vrf definition vpn11
@@ -33,9 +34,9 @@ vrf definition vpn11
  address-family ipv4
   import map vpn11_import
   export map vpn11_export
-  route-target export 65008:2588111
- no route-target import 65008:2588672
-  route-target import 65008:3112960
+  route-target export 65001:2588111
+  no route-target import 65001:2359297
+  route-target import 65001:2555905
  exit-address-family
 !
 
@@ -64,7 +65,7 @@ route-map vpn10_import permit 65535
 !
 route-map vpn10_export permit 5 
  match ip address prefix-list vpn10
- set extcommunity rt 65008:2588110
+ set extcommunity rt 65001:2588110
 !
 !
 route-map vpn11_import deny 5 
@@ -74,5 +75,5 @@ route-map vpn11_import permit 65535
 !
 route-map vpn11_export permit 5 
  match ip address prefix-list vpn11
- set extcommunity rt 65008:2588111
+ set extcommunity rt 65001:2588111
 !
