@@ -88,35 +88,3 @@ def main():
 
 if __name__ == "__main__":
    main()
-
-
-
-
-
-# if has wrong vrf route, delete route
-
-# delete default route on rt-0
-'''
-response = client.delete_route(
-    DestinationCidrBlock='101.1.3.0/24',
-    RouteTableId='rtb-0cae81911284c445a'
-)
-
-response = client.delete_route(
-    DestinationCidrBlock='102.1.3.0/24',
-    RouteTableId='rtb-0cae81911284c445a'
-)
-
-# update route vrf1_egress_rt
-print("Update route entry to 101.1.3.0/24")
-sdwan_vpn10_route_1 = vrf1_egress_rt.create_route(
-    DestinationCidrBlock='101.1.3.0/24',
-    TransitGatewayId=tgwId
-)
-print("Update route entry to 102.1.3.0/24")
-sdwan_vpn10_route_2 = vrf1_egress_rt.create_route(
-    DestinationCidrBlock='102.1.3.0/24',
-    TransitGatewayId=tgwId
-)
-
-'''
